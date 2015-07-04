@@ -1,0 +1,15 @@
+.*
+!/.gitignore
+/build
+/java
+/packages
+/perl
+/validator
+*.log
+/.composer
+/.cpan
+/.subversion
+*.7z
+*.cnf
+service.manifest
+

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Basic Page Needs 
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title>Wikimedia Validator (+API)</title>
+    <meta name="description" content="W3C Validator API service for Wikimedia-related work.">
+    <meta name="author" content="Rainer Rillke">
+
+    <!-- Mobile Specific Metas 
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FONT 
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+    <!-- CSS 
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="Skeleton/css/normalize.css">
+    <link rel="stylesheet" href="Skeleton/css/skeleton.css">
+    <link rel="stylesheet" href="custom.css">
+
+    <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- JS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <script src="jquery-1.11.1.min.js"></script>
+    <script src="jquery.blockUI.js"></script>
+</head>
+
+<body>
+
+    <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <div class="container">
+        <section class="header">
+            <a href="//tools.wmflabs.org/validator/">
+               <img width="70" height="70" alt="logo" id="logo" src="//upload.wikimedia.org/wikipedia/commons/thumb/6/64/Wikimedia_Kiva_community_logo.svg/70px-Wikimedia_Kiva_community_logo.svg.png">
+               <h1>Validator</h1>
+            </a>
+        </section>
+        <div class="row">
+            <section class="twelve columns">
+                <h2>W3C</h2>
+                <form action="w3.php" enctype="multipart/form-data" method="post">
+                    <p>
+                        <label for="file">File:</label>
+                        <input type="file" size="30" name="file" id="file">
+                    </p>
+                    <fieldset>
+                        <legend>
+                            Fine tuning</legend>
+                        <label for="doctype">Document type</label>
+                        <select name="doctype" id="doctype">
+                            <option selected value="Inline">(detect automatically)</option>
+                            <option value="HTML5">HTML5 (experimental)</option>
+                            <option value="XHTML 1.0 Strict">XHTML 1.0 Strict</option>
+                            <option value="XHTML 1.0 Transitional">XHTML 1.0 Transitional</option>
+                            <option value="XHTML 1.0 Frameset">XHTML 1.0 Frameset</option>
+                            <option value="HTML 4.01 Strict">HTML 4.01 Strict</option>
+                            <option value="HTML 4.01 Transitional">HTML 4.01 Transitional</option>
+                            <option value="HTML 4.01 Frameset">HTML 4.01 Frameset</option>
+                            <option value="HTML 4.01 + RDFa 1.1">HTML 4.01 + RDFa 1.1</option>
+                            <option value="HTML 3.2">HTML 3.2</option>
+                            <option value="HTML 2.0">HTML 2.0</option>
+                            <option value="ISO/IEC 15445:2000 (&quot;ISO HTML&quot;)">ISO/IEC 15445:2000 ("ISO HTML")</option>
+                            <option value="XHTML 1.1">XHTML 1.1</option>
+                            <option value="XHTML + RDFa">XHTML + RDFa</option>
+                            <option value="XHTML Basic 1.0">XHTML Basic 1.0</option>
+                            <option value="XHTML Basic 1.1">XHTML Basic 1.1</option>
+                            <option value="XHTML Mobile Profile 1.2">XHTML Mobile Profile 1.2</option>
+                            <option value="XHTML-Print 1.0">XHTML-Print 1.0</option>
+                            <option value="XHTML 1.1 plus MathML 2.0">XHTML 1.1 plus MathML 2.0</option>
+                            <option value="XHTML 1.1 plus MathML 2.0 plus SVG 1.1">XHTML 1.1 plus MathML 2.0 plus SVG 1.1</option>
+                            <option value="MathML 2.0">MathML 2.0</option>
+                            <option value="SVG 1.0">SVG 1.0</option>
+                            <option value="SVG 1.1">SVG 1.1</option>
+                            <option value="SVG 1.1 Tiny">SVG 1.1 Tiny</option>
+                            <option value="SVG 1.1 Basic">SVG 1.1 Basic</option>
+                            <option value="SMIL 1.0">SMIL 1.0</option>
+                            <option value="SMIL 2.0">SMIL 2.0</option>
+                        </select>
+                        <label for="format">Output format</label>
+                        <select name="format" id="format">
+                            <option>json</option>
+                            <option>soap12</option>
+                            <option selected>html</option>
+                        </select>
+                    </fieldset>
+                    <input value="validate" class="button-primary" type="submit">
+                    <button type="button" class="hidden api-request">Show API request</button>
+                </form>
+                <p>Result powered by the W3C validator engine.</p>
+            </section>
+        </div>
+        <div class="row">
+            <section class="twelve columns">
+                <h2>W3C CSS</h2>
+                <form action="w3css.php" enctype="multipart/form-data" method="post">
+                    <p>
+                        <label for="css-file">File:</label>
+                        <input type="file" size="30" name="file" id="css-file">
+                    </p>
+                    <fieldset>
+                        <legend>
+                            Fine tuning</legend>
+                        <label for="css-profile">Profile</label>
+                        <select name="profile" id="css-profile">
+                            <option value="none">(none)</option>
+                            <option value="css1">CSS level 1</option>
+                            <option value="css2">CSS level 2</option>
+                            <option value="css21">CSS level 2.1</option>
+                            <option value="css3" selected>CSS level 3</option>
+                            <option value="svg">SVG</option>
+                            <option value="svgbasic">SVG basic</option>
+                            <option value="svgtiny">SVG tiny</option>
+                            <option value="mobile">Mobile</option>
+                            <option value="atsc-tv">ATSC TV profile</option>
+                            <option value="tv">TV profile</option>
+                        </select>
+                        <label for="css-medium">Medium</label>
+                        <select name="medium" id="css-medium">
+                            <option value="all" selected>(all)</option>
+                            <option value="aural">aural</option>
+                            <option value="braille">braille</option>
+                            <option value="embossed">embossed</option>
+                            <option value="handheld">handheld</option>
+                            <option value="print">print</option>
+                            <option value="projection">projection</option>
+                            <option value="screen">screen</option>
+                            <option value="tty">TTY</option>
+                            <option value="tv">TV</option>
+                            <option value="presentation">presentation</option>
+                        </select>
+                        <label for="css-lang">Output language</label>
+                        <select name="lang" id="css-lang">
+                            <option selected>en</option>
+                            <option>fr</option>
+                            <option>it</option>
+                            <option>ko</option>
+                            <option>ja</option>
+                            <option>es</option>
+                            <option>zh-cn</option>
+                            <option>nl</option>
+                            <option>de</option>
+                        </select>
+
+                        <label for="css-format">Output format</label>
+                        <select name="format" id="css-format">
+                            <option>json</option>
+                            <option>soap12</option>
+                            <option>html</option>
+                            <option selected>xhtml</option>
+                            <option>text</option>
+                        </select>
+                    </fieldset>
+                    <input value="validate CSS" class="button-primary" type="submit">
+                    <button type="button" class="hidden api-request">Show API request</button>
+                </form>
+                <p>Result powered by the W3C CSS validator engine.</p>
+            </section>
+        </div>
+        <footer>
+            <p>This tool is maintained by <a href="//commons.wikimedia.org/wiki/User:Rillke">Rillke</a>. Issues and pull requests? <a href="https://github.com/Rillke/validator">On GitHub</a>.</p>
+        </footer>
+    </div>
+    <script src="validator.js"></script>
+    <!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+
+</html>

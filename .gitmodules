@@ -1,0 +1,4 @@
+[submodule ""]
+	path = public_html/Skeleton
+	url = https://github.com/dhg/Skeleton.git
+

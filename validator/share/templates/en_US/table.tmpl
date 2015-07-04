@@ -1,0 +1,110 @@
+<TMPL_IF NAME="VALID">
+  <TMPL_IF NAME="is_tentative">
+    <h2 class="tentative_valid">This document was <em>Tentatively</em> checked as  
+    <TMPL_VAR NAME="file_version" ESCAPE="HTML"></h2>
+  <TMPL_ELSE>
+    <h2 class="valid">This document was successfully checked as <TMPL_IF NAME="xmlwf_only">well-formed</TMPL_IF>
+     <TMPL_VAR NAME="file_version" ESCAPE="HTML">!</h2>
+  </TMPL_IF>
+<TMPL_ELSE>
+  <TMPL_IF NAME="fatal_error">
+  <h2 id="results" class="invalid">Sorry! This document cannot be checked.</h2>
+  <TMPL_ELSE>  
+  <h2 id="results" class="invalid">Error<TMPL_IF NAME="number_of_errors_is_plural">s</TMPL_IF> found while checking this document as <TMPL_VAR NAME="file_version" ESCAPE="HTML">!</h2>
+  </TMPL_IF>  
+</TMPL_IF>  
+
+
+<TMPL_IF NAME="file_uri">
+<TMPL_IF NAME="is_upload">  
+<form id="form" method="post" enctype="multipart/form-data" action="w3.php">
+<TMPL_ELSE>
+  <TMPL_IF NAME="is_direct_input">
+    <form id="form" method="post" enctype="multipart/form-data" action="w3.php">
+  <TMPL_ELSE>
+    <form id="form" method="get" action="w3.php">
+  </TMPL_IF>
+</TMPL_IF>
+  <table class="header">
+    <tr>
+    <th>Result:</th>
+    <TMPL_IF NAME="VALID">
+    <td colspan="2" class="valid">
+      <TMPL_IF NAME="is_tentative">
+        Tentatively passed<TMPL_IF Name="valid_warnings_num">, <strong class="has_warnings"><TMPL_VAR NAME="valid_warnings_num"> warning(s)</strong></TMPL_IF>
+      <TMPL_ELSE>
+        Passed<TMPL_IF Name="valid_warnings_num">, <strong class="has_warnings"><TMPL_VAR NAME="valid_warnings_num"> warning(s)</strong></TMPL_IF>
+      </TMPL_IF>
+    <TMPL_ELSE>
+    <td colspan="2" class="invalid">
+      <TMPL_IF NAME="number_of_errors_is_1">1 Error</TMPL_IF><TMPL_IF NAME="number_of_errors_is_plural"><TMPL_VAR NAME="valid_errors_num" ESCAPE="HTML"> Errors</TMPL_IF><TMPL_IF NAME="valid_warnings_num">, <TMPL_VAR NAME="valid_warnings_num"> warning(s)</TMPL_IF>
+      <TMPL_IF NAME="number_of_errors_is_0">Invalid<!-- this case where validation fails but no error is listed should never happen --></TMPL_IF>
+    </TMPL_IF>
+    </td>
+    </tr>
+    <tr>
+<TMPL_IF NAME="is_upload">
+  <th><label title="Choose a Local File to Upload and Validate" for="file">File</label>:</th>
+  <td colspan="2">
+    
+    <input type="file" id="file" name="file" size="30" />
+    <p class="revalidate_instructions">Use the file selection box above if you wish to re-validate the uploaded file <TMPL_VAR NAME="file_uri" ESCAPE="HTML"></p>
+  </td>
+  
+<TMPL_ELSE>
+  <TMPL_IF NAME="is_direct_input">
+          <th><label title="Uploaded source of your Document" for="fragment">Source</label>:</th><td colspan="2"><textarea id="fragment" name="fragment" rows="12" cols="80"><TMPL_LOOP NAME="file_source"><TMPL_VAR NAME="file_source_line" ESCAPE="HTML">
+</TMPL_LOOP></textarea></td>
+  <TMPL_ELSE>  
+      <th><label title="Address of Page to Validate" for="uri">Address</label>:</th>
+      <td colspan="2">disabled</td>
+  </TMPL_IF>    
+</TMPL_IF>
+    </tr>
+<TMPL_IF NAME="opt_verbose">
+    <tr><th>Modified:</th><td colspan="2"><TMPL_VAR NAME="file_modified" ESCAPE="HTML" DEFAULT="(undefined)"></td></tr>
+    <tr><th>Server:</th><td colspan="2"><TMPL_VAR NAME="file_server" ESCAPE="HTML" DEFAULT="(undefined)"></td></tr>
+    <tr><th>Size:</th><td colspan="2"><TMPL_VAR NAME="file_size" ESCAPE="HTML" DEFAULT="(undefined)"></td></tr>
+    <tr><th>Content-Type:</th><td colspan="2"><TMPL_VAR NAME="file_contenttype" ESCAPE="HTML" DEFAULT="(undefined)"></td></tr>
+</TMPL_IF>
+  <TMPL_LOOP NAME="debug">
+    <tr><th><TMPL_VAR NAME="name" ESCAPE="HTML">:</th><td colspan="2"><TMPL_VAR NAME="value" ESCAPE="HTML" DEFAULT="(undefined)"></td></tr>
+  </TMPL_LOOP>
+<TMPL_IF NAME="file_charset">
+  <tr>
+  </tr>
+<TMPL_ELSE>
+</TMPL_IF>
+<TMPL_IF NAME="file_version">
+  <tr>
+    <th><label for="doctype" title="Document Type">Doctype</label>:</th>
+    <td><TMPL_VAR NAME="file_version" ESCAPE="HTML"></td><td><TMPL_INCLUDE NAME="popup_doctype.tmpl"></td>
+  </tr>
+<TMPL_ELSE>
+  <tr><th>Doctype:</th><td colspan="2"><TMPL_INCLUDE NAME="popup_doctype.tmpl"></td></tr>
+</TMPL_IF>
+<TMPL_IF NAME="root_element">
+  <tr>
+    <th>Root Element:</th>
+    <td colspan="2"><TMPL_VAR NAME="root_element" ESCAPE="HTML"></td>
+  </tr>
+</TMPL_IF>
+<TMPL_IF NAME="file_namespace">
+    <tr>
+      <th>Root Namespace:</th>
+      <td colspan="2"><a href="<TMPL_VAR NAME="file_namespace" ESCAPE="HTML">"><TMPL_VAR NAME="file_namespace" ESCAPE="HTML"></a></td>
+    </tr>
+</TMPL_IF>
+<TMPL_IF NAME="file_namespaces">
+    <tr>
+      <th>Other Namespaces</th>
+      <td colspan="2">
+        <ul>
+          <TMPL_LOOP NAME="file_namespaces"><li><a href="<TMPL_VAR NAME="uri" ESCAPE="HTML">"><TMPL_VAR NAME="uri" ESCAPE="HTML"></a></li></TMPL_LOOP>
+        </ul>
+      </td>
+    </tr>
+</TMPL_IF>
+  </table>
+</form>
+</TMPL_IF>
