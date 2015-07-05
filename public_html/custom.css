@@ -1,3 +1,9 @@
+footer, section {
+	border-top: 1px dotted grey;
+}
+section.header {
+	border: none;
+}
 .header {
 	margin-top: 4em;
 	text-align: center;
@@ -8,8 +14,10 @@
 .required-but-not-supplied {
 	background: red;
 }
-.req-sample-response pre {
+.req-sample-response pre, .req-sample-request pre {
 	height: 10em;
 	resize: both;
 	overflow: auto;
+	border: dotted 1px #CCC;
 }
+
