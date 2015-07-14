@@ -5,6 +5,7 @@ $profile_supported = array( 'none', 'css1', 'css2', 'css21', 'css3', 'svg', 'svg
 $lang_supported = array( 'en', 'fr', 'it', 'ko', 'ja', 'es', 'zh-cn', 'nl', 'de' );
 $medium_supported = array( 'all', 'aural', 'braille', 'embossed', 'handheld', 'print', 'projection', 'screen', 'tty', 'tv', 'presentation' );
 $input_supported = array( 'css', 'html', 'htm', 'shtml', 'xhtml', 'xml' );
+$warning_supported = array( '0', '1', '2' );
 $allowed_headers = array( 'vextwarning', 'output', 'lang', 'warning', 'medium', 'profile' );
 
 include_once ( 'shared/common.php' ) ;
@@ -57,28 +58,52 @@ if ( isset( $origin ) ) {
 	}
 }
 
+$fileName = '';
+$fileExtension = 'css';
+
 if ( !array_key_exists( 'file', $_FILES ) ) {
-	header( "Location: $url" );
-	die();
-}
-$uploadName = $_FILES['file']['tmp_name'];
-$extension = end(explode(".", $_FILES["file"]["name"]));
-if (!in_array( $extension, $input_supported )) {
-	$extension = 'html';
-}
-$fileName = $uploadName . '.' . $extension;
+	if ( !array_key_exists( 'file', $_POST ) ) {
+		header( "Location: $url#nofile" );
+		die();
+	}
+	if ( strlen( $_POST['file'] ) > 5000000 ) {
+		header( "Location: $url#tooBig" );
+		die();
+	}
+	$fileName = tempnam( sys_get_temp_dir(), 'validator-css-' );
+	@unlink( $fileName );
+	if ( isset( $_REQUEST['file-extension'] ) && in_array( $_REQUEST['file-extension'], $input_supported ) ) {
+		$fileExtension = $_REQUEST['file-extension'];
+	} else {
+		header( 'X-API-WARNING: File submitted through POST and no or unsupported file-extension specified - assuming css' );
+	}
+	$fileName .= '.' . $fileExtension;
+	if ( file_put_contents( $fileName, $_POST['file'] ) === false ) {
+		@unlink( $fileName );
+		header( "Location: $url#cantwrite" );
+		die();
+	} ;
+} else {
+	$uploadName = $_FILES['file']['tmp_name'];
+	$fileExtension = end( explode( '.', $_FILES['file']['name'] ) );
+	if ( !in_array( $fileExtension, $input_supported ) ) {
+		header( 'X-API-WARNING: File submitted does not have a supported file extension - assuming css' );
+		$fileExtension = 'css';
+	}
+	$fileName .= '.' . $fileExtension;
 
-if ( $_FILES['file']['size'] > 5000000 ) {
-	unlink( $uploadName );
-	header( "Location: $url#tooBig" );
-	die();
-}
+	if ( $_FILES['file']['size'] > 5000000 ) {
+		unlink( $uploadName );
+		header( "Location: $url#tooBig" );
+		die();
+	}
 
-if ( !move_uploaded_file( $uploadName, $fileName ) ) {
-	unlink( $uploadName );
-	header( "Location: $url#cantmove" );
-	echo( 'cant move uploaded file' );
-	die();
+	if ( !move_uploaded_file( $uploadName, $fileName ) ) {
+		unlink( $uploadName );
+		header( "Location: $url#cantmove" );
+		echo( 'cant move uploaded file' );
+		die();
+	}
 }
 
 $output = array();
@@ -138,7 +163,15 @@ if ( $medium !== '' ) {
         $medium = ' --medium=' . escapeshellarg( $medium );
 }
 
-exec( 'java -Xms1G -jar /data/project/' . $tool_user_name . '/java/css-validator/css-validator.jar' . $formatArg . $profile . $lang . $medium . ' file:' . $fileName, $output );
+$warning = ( isset( $_REQUEST['warning'] ) ? $_REQUEST['warning'] : '' );
+if ( !in_array( $warning, $warning_supported ) ) {
+        $warning = '';
+}
+if ( $warning !== '' ) {
+        $warning = ' --warning=' . escapeshellarg( $warning );
+}
+
+exec( 'java -Xms1G -jar /data/project/' . $tool_user_name . '/java/css-validator/css-validator.jar' . $formatArg . $profile . $lang . $medium . $warning . ' file:' . $fileName, $output );
 @unlink( $fileName );
 $output = implode( "\n", $output );
 
@@ -157,12 +190,12 @@ if ( $format === 'json' ) {
 		$output = $outputParsed[2];
 	}
 }
-if ( isset($params) ) {
+if ( isset( $params ) ) {
 	$params = explode( " ", $params );
-	foreach( $params as $p ) {
+	foreach ( $params as $p ) {
 		$p = explode( "=", $p );
-		if ( count($p) > 1 && in_array( $p[0], $allowed_headers ) ) {
-			header( 'X-CSS-Validator-'. $p[0] . ': ' . str_replace( ',', '', $p[1] ) );
+		if ( count( $p ) > 1 && in_array( $p[0], $allowed_headers ) ) {
+			header( 'X-CSS-Validator-' . $p[0] . ': ' . str_replace( ',', '', $p[1] ) );
 		}
 	}
 }
@@ -171,6 +204,4 @@ header( 'Cache-Control: must-revalidate, post-check=0, pre-check=0' );
 echo str_replace( 'file:' . $fileName, '/WMFTempstore/toValidate.' . $extension, $output );
 
 die();
-
-
 

@@ -6,7 +6,7 @@ $doctypes_supported = array( 'Inline', 'HTML5', 'XHTML 1.0 Strict', 'XHTML 1.0 T
 	'HTML 4.01 + RDFa 1.1', 'HTML 3.2', 'HTML 2.0', 'ISO/IEC 15445:2000 ("ISO HTML")', 'XHTML 1.1',
 	'XHTML + RDFa', 'XHTML Basic 1.0', 'XHTML Basic 1.1', 'XHTML Mobile Profile 1.2', 'XHTML-Print 1.0',
 	'XHTML 1.1 plus MathML 2.0', 'XHTML 1.1 plus MathML 2.0 plus SVG 1.1', 'MathML 2.0', 'SVG 1.0', 'SVG 1.1',
-	'SVG 1.1 Tiny', 'SVG 1.1 Basic', 'SMIL 1.0', 'SMIL 2.0', );
+	'SVG 1.1 Tiny', 'SVG 1.1 Basic', 'SMIL 1.0', 'SMIL 2.0' );
 
 include_once ( 'shared/common.php' ) ;
 // error_reporting( E_ALL & ~E_NOTICE ); # Don't clutter the directory with unhelpful stuff
@@ -58,16 +58,39 @@ if ( isset( $origin ) ) {
 	}
 }
 
-if ( !array_key_exists( 'file', $_FILES ) ) {
-	header( "Location: $url" );
-	die();
-}
-$uploadName = $_FILES['file']['tmp_name'];
+$uploadName = '';
 
-if ( $_FILES['file']['size'] > 5000000 ) {
-	unlink( $uploadName );
-	header( "Location: $url#tooBig" );
-	die();
+if ( !array_key_exists( 'file', $_FILES ) ) {
+	if ( !array_key_exists( 'file', $_POST ) ) {
+		header( "Location: $url#nofile" );
+		die();
+	}
+	if ( strlen( $_POST['file'] ) > 5000000 ) {
+		header( "Location: $url#tooBig" );
+		die();
+	}
+	$uploadName = tempnam( sys_get_temp_dir(), 'validator-w3-' );
+	@unlink( $uploadName );
+	$fileExtension = 'xml';
+	if ( isset( $_REQUEST['file-extension'] ) ) {
+		$fileExtension = $_REQUEST['file-extension'];
+	} else {
+		header( 'X-API-WARNING: File submitted through POST and no file-extension specified - assuming xml' );
+	}
+	$uploadName .= '.' . $fileExtension;
+	if ( file_put_contents( $uploadName, $_POST['file'] ) === false ) {
+		@unlink( $uploadName );
+		header( "Location: $url#cantwrite" );
+		die();
+	} ;
+} else {
+	$uploadName = $_FILES['file']['tmp_name'];
+
+	if ( $_FILES['file']['size'] > 5000000 ) {
+		unlink( $uploadName );
+		header( "Location: $url#tooBig" );
+		die();
+	}
 }
 
 $output = array();
@@ -92,6 +115,11 @@ if ( $format !== '' ) {
 	$formatArg = ' output=' . escapeshellarg( $format );
 }
 
+$verbose = isset( $_REQUEST['verbose'] ) ? '1' : '';
+if ( $verbose !== '' ) {
+	$verbose = ' verbose=' . escapeshellarg( $verbose );
+}
+
 $doctype = ( isset( $_REQUEST['doctype'] ) ? $_REQUEST['doctype'] : '' );
 if ( !in_array( $doctype, $doctypes_supported ) ) {
         $doctype = '';
@@ -100,9 +128,7 @@ if ( $doctype !== '' ) {
         $doctype = ' doctype=' . escapeshellarg( $doctype );
 }
 
-
-
-exec( '/data/project/' . $tool_user_name . '/validator/cgi-bin/check' . $formatArg . $doctype . ' phpfile=' . escapeshellarg( $uploadName ), $output );
+exec( '/data/project/' . $tool_user_name . '/validator/cgi-bin/check' . $verbose . $formatArg . $doctype . ' phpfile=' . escapeshellarg( $uploadName ), $output );
 @unlink( $uploadName );
 $output = implode( "\n", $output );
 $outputParsed = array();

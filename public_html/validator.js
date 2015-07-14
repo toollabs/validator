@@ -41,7 +41,7 @@
 				} );
 		},
 		getParams: function( $form ) {
-			var $inputs = $form.find( 'input,select' ),
+			var $inputs = $form.find( 'input,select,textarea' ),
 				$def = $.Deferred(),
 				pending = 0,
 				params = {};
