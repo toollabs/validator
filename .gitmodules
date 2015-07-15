@@ -2,3 +2,6 @@
 	path = public_html/Skeleton
 	url = https://github.com/dhg/Skeleton.git
 
+[submodule "svgcheck"]
+	path = svgcheck
+	url = https://github.com/Jarry1250/labs-svgcheck.git

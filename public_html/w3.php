@@ -8,7 +8,7 @@ $doctypes_supported = array( 'Inline', 'HTML5', 'XHTML 1.0 Strict', 'XHTML 1.0 T
 	'XHTML 1.1 plus MathML 2.0', 'XHTML 1.1 plus MathML 2.0 plus SVG 1.1', 'MathML 2.0', 'SVG 1.0', 'SVG 1.1',
 	'SVG 1.1 Tiny', 'SVG 1.1 Basic', 'SMIL 1.0', 'SMIL 2.0' );
 
-include_once ( 'shared/common.php' ) ;
+require_once 'shared/common.php';
 // error_reporting( E_ALL & ~E_NOTICE ); # Don't clutter the directory with unhelpful stuff
 
 function startsWith( $haystack, $needle ) {
@@ -129,7 +129,12 @@ if ( $doctype !== '' ) {
 }
 
 exec( '/data/project/' . $tool_user_name . '/validator/cgi-bin/check' . $verbose . $formatArg . $doctype . ' phpfile=' . escapeshellarg( $uploadName ), $output );
-@unlink( $uploadName );
+
+$svgCheck = isset( $_REQUEST['svgcheck'] ) && $format === 'json';
+
+if ( !$svgCheck ) {
+	@unlink( $uploadName );
+}
 $output = implode( "\n", $output );
 $outputParsed = array();
 if ( $format === 'json' ) {
@@ -143,8 +148,23 @@ if ( $format === 'json' ) {
 			}
 		}
 	}
-	if ( json_decode( $output ) === NULL ) {
+	$decoded = json_decode( $output, true );
+	if ( $decoded === NULL ) {
+		@unlink( $uploadName );
 		$output = json_encode( array( 'response' => $output ) );
+	} else if ( $svgCheck ) {
+		$fileContents = file_get_contents( $uploadName );
+		@unlink( $uploadName );
+		$fileErrors = array();
+		require_once '../svgcheck/common.php';
+		foreach ( preg_split( "/((\r?\n)|(\r\n?))/", $subject ) as $lnumber => $line ) {
+			$lineErrors = isproblematic( $line );
+			if ( $lineErrors ) {
+				$fileErrors[] = array( 'line' => $lnumber, 'issues' => $lineErrors );
+			}
+		}
+		$decoded['svgcheck'] = $fileErrors;
+		$output = json_encode( $decoded );
 	}
 } else {
 	if ( preg_match( '/(Content.+?[\dt]\n+)(\<.+\>)/s', $output, $outputParsed ) ) {

@@ -51,7 +51,7 @@
                 <form action="w3.php" enctype="multipart/form-data" method="post">
                     <p>
                         <label for="file">File:</label>
-                        <input type="file" size="30" name="file" id="file">
+                        <input type="file" name="file" id="file">
                     </p>
                     <fieldset>
                         <legend>
@@ -91,6 +91,12 @@
                             <option>soap12</option>
                             <option selected>html</option>
                         </select>
+			<div>
+				<label for="svgcheck">
+					<input type="checkbox" name="svgcheck" id="svgcheck">
+					Wikimedia SVG check
+				</label>
+			</div>
                     </fieldset>
                     <input value="validate (X)HTML/XML/SVG" class="button-primary" type="submit">
                     <button type="button" class="hidden api-request">Show API request</button>
@@ -104,7 +110,7 @@
                 <form action="w3css.php" enctype="multipart/form-data" method="post">
                     <p>
                         <label for="css-file">File:</label>
-                        <input type="file" size="30" name="file" id="css-file">
+                        <input type="file" name="file" id="css-file">
                     </p>
                     <fieldset>
                         <legend>
