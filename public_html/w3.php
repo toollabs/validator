@@ -157,7 +157,7 @@ if ( $format === 'json' ) {
 		@unlink( $uploadName );
 		$fileErrors = array();
 		require_once '../svgcheck/common.php';
-		foreach ( preg_split( "/((\r?\n)|(\r\n?))/", $subject ) as $lnumber => $line ) {
+		foreach ( preg_split( "/((\r?\n)|(\r\n?))/", $fileContents ) as $lnumber => $line ) {
 			$lineErrors = isproblematic( $line );
 			if ( $lineErrors ) {
 				$fileErrors[] = array( 'line' => $lnumber, 'issues' => $lineErrors );
