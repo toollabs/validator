@@ -20,4 +20,7 @@ section.header {
 	overflow: auto;
 	border: dotted 1px #CCC;
 }
+.info {
+	display: none;
+}
 

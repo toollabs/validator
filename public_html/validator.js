@@ -252,6 +252,14 @@
 		.css( 'visibility', 'visible' )
 		.click( validator.showRequest );
 
+	$( '#doctype' ).change( function() {
+		if ( /^SVG/.test( $( this ).val() ) ) {
+			$( '.info' ).show();
+		} else {
+			$( '.info' ).hide();
+		}
+	} );
+
 	$( 'form' )
 		.submit( function( e ) {
 			if ( !validator.validateInput( $( this ) ) ) {
