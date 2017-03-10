@@ -128,6 +128,7 @@ if ( $doctype !== '' ) {
         $doctype = ' doctype=' . escapeshellarg( $doctype );
 }
 
+putenv( 'W3C_VALIDATOR_CFG=' . getenv( 'W3C_VALIDATOR_CFG' ) );
 exec( '/data/project/' . $tool_user_name . '/validator/cgi-bin/check' . $verbose . $formatArg . $doctype . ' phpfile=' . escapeshellarg( $uploadName ), $output );
 
 $svgCheck = isset( $_REQUEST['svgcheck'] ) && $format === 'json';
